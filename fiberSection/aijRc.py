@@ -8,7 +8,6 @@ class Aij():
     def rebar_area(self, index: str) -> float:
         try:
             dia = float(index[1:])
-
             return (np.pi * dia ** 2) / 4
         except:
             raise ValueError
