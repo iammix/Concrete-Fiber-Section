@@ -87,8 +87,6 @@ class Report():
         xlist = [40, (40 + 560) / 2, 560]
         ylist = [760, 780]
         c.grid(xlist, ylist)
-
-        # sub title
         c.setFont(self.FONT_NAME, 12)
         c.drawString(55, 765, u"Model")
         c.drawString(315, 765, u"M-φ Relationship")
@@ -106,7 +104,6 @@ class Report():
     def print_head(self, c, title):
         c.setFont(self.FONT_NAME, 20)
         c.drawString(50, 795, title)
-
         c.setFont(self.FONT_NAME, 12)
         inputf = './db/input.txt'
         f = open(inputf, 'r', encoding='utf-8')
@@ -122,23 +119,19 @@ class Report():
                 break
         f.close()
         data = tmpData
-        # c.setFont(self.FONT_NAME, 9)
         for i in range(0, len(data)):
-            # txt
             c.drawString(55, 720 - (i - 1) * 14, data[i])
         c.showPage()
 
     def create_pdf(self, dataNum, pdfFile, title):
         c = canvas.Canvas(pdfFile)
-
         numPage = dataNum // 2
         numMod = dataNum % 2
-        # print(numPage,numMod)
         if numMod >= 1:
             numPage = numPage + 1
 
         for i in range(0, numPage):
-            index = 2 * i  # index: 参照データのインデックス
+            index = 2 * i
             if numPage == 1:
                 self.print_page(c, index, dataNum)
             elif i != numPage - 1 and numPage != 1:
@@ -150,23 +143,4 @@ class Report():
                     self.print_page(c, index, 2)
 
         c.save()
-        print("repot.py is Okay!!.")
-
-
-
-########################################################################
-# test script
-
-pathname = "./test.pdf"
-obj = Report()
-
-########################################################################
-inputf = []
-inputf.append("./db/rcslab.txt")
-inputf.append("./db/rcslab.txt")
-inputf.append("./db/rcslab.txt")
-inputf.append("./db/rcslab.txt")
-inputf.append("./db/rcslab.txt")
-inputf.append("./db/rcslab.txt")
-
-title = "sample"
+        print("Report GENERATED . . .")
