@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import pandas
 import os
+
+import aijRc
 import materials
 
 
@@ -125,6 +127,38 @@ class Fiber:
                 self.sd.append(da)
 
         print("Created Concrete Fiber Prop.")
+
+    def createMatrix_steel(self, xx1, xx2, yy1, yy2, nx, ny, dtx, dty, dia, fy):
+        delx = ((xx2 - xx1) - 2.0 * dtx) / (nx - 1.0)
+        dely = ((yy2 - yy1) - 2.0 * dty) / (ny - 1.0)
+
+        for i in range(nx):
+            self.xs.append(xx1 + dtx + i * delx)
+            self.ys.append(yy1 + dty)
+            self.dia.append(aijRc.Aij.diameter(dia))
+            self.fy.append(fy)
+            self.ra.append(aijRc.Aij.rebar_area(dia))
+
+        for i in range(0, nx):
+            self.xs.append(xx1 + dtx + i * delx)
+            self.ys.append(yy2 - dty)
+            self.dia.append(aijRc.Aij.diameter(dia))
+            self.fy.append(fy)
+            self.ra.append(aijRc.Aij.rebar_area(dia))
+
+        for i in range(0, ny - 2):
+            self.xs.append(xx1 + dtx)
+            self.ys.append(yy1 + dty + (i + 1) * dely)
+            self.dia.append(aijRc.Aij.diameter(dia))
+            self.fy.append(fy)
+            self.ra.append(aijRc.Aij.rebar_area(dia))
+
+        for i in range(0, ny - 2):
+            self.xs.append(xx2 - dtx)
+            self.ys.append(yy1 + dty + (i + 1) * dely)
+            self.dia.append(aijRc.Aij.diameter(dia))
+            self.fy.append(fy)
+            self.ra.append(aijRc.Aij.rebar_area(dia))
 
     def getModel(self, xx1, xx2, yy1, yy2, ndimx, ndimy, fc, ids, nx, ny, dtx, dty, dia, fy):
         try:
