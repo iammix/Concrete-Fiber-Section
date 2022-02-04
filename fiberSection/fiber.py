@@ -23,4 +23,15 @@ class Fiber:
             self.position_x.append(self.xx1[i])
             self.position_y.append(self.yy1[i])
 
+            self.position_x.append(self.xx2[i])
+            self.position_y.append(self.yy1[i])
+
+            self.position_x.append(self.xx1[i])
+            self.position_y.append(self.yy2[i])
+
+            self.position_x.append(self.xx2[i])
+            self.position_y.append(self.yy2[i])
+        self.material1 = material1
+        self.material2 = material2
+
 
