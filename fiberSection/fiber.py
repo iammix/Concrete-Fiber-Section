@@ -18,4 +18,9 @@ class Fiber:
         self.material2 = material2
         self.position_x = []
         self.position_y = []
+        # TODO: not very clear what is the purpose of this loop
+        for i in range(len(self.xx1)):
+            self.position_x.append(self.xx1[i])
+            self.position_y.append(self.yy1[i])
+
 
