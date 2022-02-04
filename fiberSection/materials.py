@@ -4,7 +4,7 @@ import matplotlib.patches as patches
 import numpy as np
 
 
-class Conc_el:
+class ConcEl:
     def __init__(self, sig_b):
         self.es = 4700.0 * math.sqrt(sig_b)
         self.ea = sig_b / self.es
@@ -29,7 +29,7 @@ class Conc_el:
         plt.show()
 
 
-class Conc_nonlinear():
+class ConcNonlinear:
     def __init__(self, sig_b):
         self.tokg = 10.1972
         self.tosi = 0.0980665
@@ -104,7 +104,7 @@ class Conc_nonlinear():
         plt.savefig(imagefile)
 
 
-class Steel():
+class Steel:
     def __init__(self, es, fy):
         if es == -99:
             self.es = 2.05 * 10 ** 5
