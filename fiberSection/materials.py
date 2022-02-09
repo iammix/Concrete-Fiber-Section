@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
+class Concrete_ParabolicLinearEC2:
+    def __init__(self, e:float):
+        self.e = e
+
+
 
 class ConcEl:
     def __init__(self, sig_b):
