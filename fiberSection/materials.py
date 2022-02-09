@@ -1,12 +1,44 @@
 import math
+
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
 
-class Concrete_ParabolicLinearEC2:
-    def __init__(self, e:float):
-        self.e = e
 
+class Concrete_ParabolicLinearEC2:
+    def __init__(self, fck: float, alpha_cc: float, gamma_c: float or int, ec2: float, ecu2: float, n: float):
+        self.fck = fck
+        self.alpha_cc = alpha_cc
+        self.gamma_c = gamma_c
+        self.ec2 = ec2
+        self.ecu2 = ecu2
+        self.n = n
+
+        f_f = self.alpha_cc * self.fck / self.gamma_c
+
+    def get_stress(self, sig_c: float) -> float:
+        fcd = self.alpha_cc * self.fck / self.gamma_c
+        result = 0
+
+        if sig_c < 0 or sig_c > self.ec2:
+            if self.n == 2:
+                result = fcd * (1 - np.sqrt(1 - sig_c / self.ec2))
+            elif self.n == 1:
+                result = fcd * sig_c / self.ec2
+            else:
+                result = fcd * (1 - ((1 - sig_c / self.ec2) ** self.n))
+        elif sig_c < self.ec2 or sig_c > self.ecu2:
+            result = fcd
+        return result
+
+    def test(self):
+        x = np.arange(0, self.ecu2 * 10, (self.ecu2 * 10) / 100.0)
+        y = []
+        for para in x:
+            y.append(self.get_stress(para))
+        y = np.array(y)
+        plt.plot(x, y, 'b-')
+        plt.grid()
+        plt.show()
 
 
 class ConcEl:
@@ -147,5 +179,5 @@ class Steel:
 
 
 if __name__ == '__main__':
-    steel = Steel(-99, 490)
-    steel.test()
+    concrete = Concrete_ParabolicLinearEC2(16, 1.0, 1.0, 0.002, 0.0035, 2)
+    concrete.test()
