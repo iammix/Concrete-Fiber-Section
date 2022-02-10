@@ -21,17 +21,17 @@ class Concrete_ParabolicLinearEC2:
 
         if sig_c > 0 and sig_c < self.ecu2:
             if self.n == 2:
-                result = fcd * (1 - np.sqrt(1 - sig_c / self.ec2))
+                result = fcd * (1 - (1 - sig_c / self.ec2) ** 2)
             elif self.n == 1:
                 result = fcd * sig_c / self.ec2
             else:
                 result = fcd * (1 - ((1 - sig_c / self.ec2) ** self.n))
-        elif sig_c < self.ec2 and sig_c > self.ecu2:
+        elif sig_c > self.ec2 and sig_c < self.ecu2:
             result = fcd
         return result
 
     def test(self):
-        x = np.arange(0, self.ecu2 * 10, (self.ecu2 * 10) / 100.0)
+        x = np.arange(0, self.ecu2 * 10, (self.ecu2) / 10000.0)
         y = []
         for para in x:
             y.append(self.get_stress(para))
@@ -48,7 +48,7 @@ class Concrete_Popovics:
         self.ec = ec
         self.ecu = ecu
 
-    def get_stress(self, sig_c):
+    def get_stress(self, sig_c) -> float:
         result = 0
         x = sig_c / self.ec
         r = self.Ec0 / (self.Ec0 - self.fc / self.ec)
@@ -60,6 +60,75 @@ class Concrete_Popovics:
 
     def test(self):
         x = np.arange(0, self.ecu * 10, (self.ecu * 10) / 100.0)
+        y = []
+        for para in x:
+            y.append(self.get_stress(para))
+        y = np.array(y)
+        plt.plot(x, y, 'b-')
+        plt.grid()
+        plt.show()
+
+
+class Concrete_NonlinearEC2:
+    def __init__(self, fcm, ec, ecu):
+        self.fcm = fcm
+        self.ec = ec
+        self.ecu = ecu
+        self.Ec = 22000 * (fcm / 10) ** 0.3
+        self.k = 1.05 * self.Ec * self.ec / self.fcm
+
+    def get_stress(self, sig_c) -> float:
+        result = 0
+
+        eta = sig_c / self.ec
+        if sig_c > 0 and sig_c <= self.ecu:
+            result = self.fcm * (self.k * eta - eta ** 2) / (1 + (self.k - 2) * eta)
+
+        return result
+
+    def test(self):
+        x = np.arange(0, self.ecu * 2, self.ecu / 10000.0)
+        y = []
+        for para in x:
+            y.append(self.get_stress(para))
+        y = np.array(y)
+        plt.plot(x, y, 'b-')
+        plt.grid()
+        plt.show()
+
+
+class Concrete_ParabolicLinearGeneral:
+    def __init__(self, Ec, fc, ec0, ecu, slope, ft, etu):
+        self.Ec = Ec
+        self.fc = fc
+        self.ec0 = ec0
+        self.ecu = ecu
+        self.slope = slope
+        self.ft = ft
+        self.etu = etu
+        if self.Ec == 0:
+            self.Ec = 22000 * (self.fc / 10) ** 0.3
+
+    def get_stress(self, sig_c) -> float:
+        result = 0
+        if sig_c > 0 and sig_c < self.ec0:
+            result = self.fc * (1 - (1 - sig_c / self.ec0) ** 2)
+        elif sig_c > self.ec0 and sig_c < self.ecu:
+            if self.slope == 0:
+                result = self.fc
+            else:
+                result = self.fc * (1 - self.slope * (sig_c - self.ec0) / (self.ecu - self.ec0))
+        elif self.ft != 0:
+            et0 = self.ft / self.Ec
+
+            if sig_c < 0 and sig_c <= et0:
+                result = sig_c * self.Ec
+            elif self.etu != 0 and sig_c < et0 and sig_c > self.etu:
+                result = self.ft * (1 - (sig_c - et0) / (self.etu - et0))
+        return result
+
+    def test(self):
+        x = np.arange(-self.etu, self.ecu * 2, self.ecu / 1000000.0)
         y = []
         for para in x:
             y.append(self.get_stress(para))
@@ -204,6 +273,42 @@ class Steel:
         plt.plot(x, y, 'b-')
         plt.show()
 
+
+class Steel_ParkSampson:
+    def __init__(self, Es, fy, fu, esh, esu):
+        self.Es = Es
+        self.fy = fy
+        self.fu = fu
+        self.esh = esh
+        self.esu = esu
+        self.ey = self.fy / self.Es
+
+    def get_stress(self, sig_s):
+        result = 0
+        abs_sig_s = abs(sig_s)
+        if abs_sig_s > 0 and abs_sig_s <= self.ey:
+            result = self.Es * abs_sig_s
+        elif abs_sig_s > self.ey and abs_sig_s <= self.esh:
+            result = self.fy
+        elif abs_sig_s > self.esh and abs_sig_s <= self.esu:
+            r = self.esu - self.esh
+            rr = abs_sig_s - self.esh
+            m = ((self.fu / self.fy) * np.sqrt(30 * r + 1) - 60 * r - 1) / (15 * r * r)
+            result = self.fy * ((m * rr + 2) / (60 * rr + 2) + (rr * (60 - m)) / (2 * np.sqrt(30 * r + 1)))
+
+        if sig_s < 0:
+            result = -result
+        return result
+
+    def test(self):
+        x = np.arange(-self.esu, self.esu, self.esu / 10000.0)
+        y = []
+        for para in x:
+            y.append(self.get_stress(para))
+        y = np.array(y)
+        plt.plot(x, y, 'b-')
+        plt.grid()
+        plt.show()
 
 
 if __name__ == '__main__':
