@@ -19,14 +19,14 @@ class Concrete_ParabolicLinearEC2:
         fcd = self.alpha_cc * self.fck / self.gamma_c
         result = 0
 
-        if sig_c < 0 or sig_c > self.ec2:
+        if sig_c > 0 and sig_c < self.ecu2:
             if self.n == 2:
                 result = fcd * (1 - np.sqrt(1 - sig_c / self.ec2))
             elif self.n == 1:
                 result = fcd * sig_c / self.ec2
             else:
                 result = fcd * (1 - ((1 - sig_c / self.ec2) ** self.n))
-        elif sig_c < self.ec2 or sig_c > self.ecu2:
+        elif sig_c < self.ec2 and sig_c > self.ecu2:
             result = fcd
         return result
 
@@ -40,6 +40,33 @@ class Concrete_ParabolicLinearEC2:
         plt.grid()
         plt.show()
 
+
+class Concrete_Popovics:
+    def __init__(self, Ec0, fc, ec, ecu):
+        self.Ec0 = Ec0
+        self.fc = fc
+        self.ec = ec
+        self.ecu = ecu
+
+    def get_stress(self, sig_c):
+        result = 0
+        x = sig_c / self.ec
+        r = self.Ec0 / (self.Ec0 - self.fc / self.ec)
+
+        if sig_c > 0 and sig_c <= self.ec:
+            result = self.fc * x * r / (r - 1 + x ** r)
+
+        return result
+
+    def test(self):
+        x = np.arange(0, self.ecu * 10, (self.ecu * 10) / 100.0)
+        y = []
+        for para in x:
+            y.append(self.get_stress(para))
+        y = np.array(y)
+        plt.plot(x, y, 'b-')
+        plt.grid()
+        plt.show()
 
 class ConcEl:
     def __init__(self, sig_b):
@@ -178,6 +205,7 @@ class Steel:
         plt.show()
 
 
+
 if __name__ == '__main__':
-    concrete = Concrete_ParabolicLinearEC2(16, 1.0, 1.0, 0.002, 0.0035, 2)
+    concrete = Concrete_ParabolicLinearEC2(16, 1.0, 1.0, 0.002, 0.0035, 1)
     concrete.test()
