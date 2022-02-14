@@ -137,6 +137,28 @@ class Concrete_ParabolicLinearGeneral:
         plt.grid()
         plt.show()
 
+
+class Concrete_ParabolicLinearFRC:
+    def __init__(self, Ec, fc, ec0, ecu, ft, s2, e2, s3, e3):
+        self.Ec = Ec
+        self.fc = fc
+        self.ec0 = ec0
+        self.ecu = ecu
+        self.ft = ft
+        self.s2 = s2
+        self.e2 = e2
+        self.s3 = s3
+        self.e3 = e3
+        if self.Ec == 0:
+            self.Ec = 22000 * (self.fc / 10) ** 0.3
+
+    def get_stress(self, sig_c) -> float:
+        result = 0
+
+        if sig_c > 0 and sig_c < self.ec0:
+            retult = self.fc * ()
+
+
 class ConcEl:
     def __init__(self, sig_b):
         self.es = 4700.0 * math.sqrt(sig_b)
