@@ -11,13 +11,13 @@ import pandas as pd
 GEN_SHIN_GOTHIC_MEDIUM_TTF = "./fonts/GenShinGothic-Monospace-Medium.ttf"
 
 
-class Report():
+class Report:
     def __init__(self, cntlfile):
         self.cntlFile = cntlfile
         self.pathname = os.path.dirname(self.cntlFile)
         # self.FONT_NAME = "Helvetica"
         self.FONT_NAME = "GenShinGothic"
-        pdfmetrics.registerFont(TTFont('GenShinGothic', GEN_SHIN_GOTHIC_MEDIUM_TTF))
+        pdfmetrics.registerFont(TTFont(self.FONT_NAME, GEN_SHIN_GOTHIC_MEDIUM_TTF))
 
     def create_row(self, c, index, df, df2, index2):
         y_shift = -360 * index
@@ -37,42 +37,32 @@ class Report():
         # Model
         c.setFont(self.FONT_NAME, 12)
         c.drawString(55, self.ypos(1, y_shift),
-                     title \
-                     )
+                     title)
         c.setFont(self.FONT_NAME, 9)
         c.drawString(60, self.ypos(3, y_shift),
-                     comment, \
-                     )
+                     comment, )
         c.drawString(65, self.ypos(4, y_shift),
                      "N=" + nn + "kN,  " \
-                                 "θ=" + theta + "deg." \
-                     )
+                                 "θ=" + theta + "deg.")
 
         # Design Condition
         c.setFont(self.FONT_NAME, 9)
 
         c.drawString(55, self.ypos(27, y_shift),
-                     "Capacity:" \
-                     )
+                     "Capacity:")
         c.drawString(60, self.ypos(29, y_shift),
-                     "Mcx = " + mc_x + " kN.m" \
-                     )
+                     "Mcx = " + mc_x + " kN.m")
         c.drawString(60, self.ypos(30, y_shift),
-                     "Max = " + ma_x + " kN.m" \
-                     )
+                     "Max = " + ma_x + " kN.m")
         c.drawString(60, self.ypos(31, y_shift),
-                     "Mux = " + mu_x + " kN.m" \
-                     )
+                     "Mux = " + mu_x + " kN.m")
 
         c.drawString(180, self.ypos(29, y_shift),
-                     "Mcy = " + mc_y + " kN.m" \
-                     )
+                     "Mcy = " + mc_y + " kN.m")
         c.drawString(180, self.ypos(30, y_shift),
-                     "May = " + ma_y + " kN.m" \
-                     )
+                     "May = " + ma_y + " kN.m")
         c.drawString(180, self.ypos(31, y_shift),
-                     "Muy = " + mu_y + " kN.m" \
-                     )
+                     "Muy = " + mu_y + " kN.m")
         imagefile = self.pathname + "/" + df2.iloc[13].replace(' ', '') + "mp.png"
         c.drawImage(imagefile, 300, y_shift + 345, width=9 * cm, preserveAspectRatio=True, mask='auto')
         imagefile = self.pathname + "/" + df2.iloc[13].replace(' ', '') + "model.png"
