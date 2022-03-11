@@ -1,2 +1,4 @@
 *.idea
 fiberSection/__pycache__/
+myenv/
+Reference/
